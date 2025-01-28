@@ -262,6 +262,7 @@ def build_app():
       <a href="http://3d-models.hunyuan.tencent.com">Homepage</a> &ensp;
       <a href="https://arxiv.org/abs/2501.12202">Technical Report</a> &ensp;
       <a href="https://huggingface.co/Tencent/Hunyuan3D-2"> Models</a> &ensp;
+      <a href="https://github.com/Tencent/Hunyuan3D-2?tab=readme-ov-file#blender-addon"> Blender Addon</a> &ensp;
     </div>
     """
 
