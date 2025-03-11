@@ -4,9 +4,9 @@ emoji: 🌍
 colorFrom: purple
 colorTo: red
 sdk: gradio
-sdk_version: 4.44.1
+sdk_version: 5.20.1
 app_file: hg_app.py
-pinned: false
+pinned: true
 short_description: Text-to-3D and Image-to-3D Generation
 models:
 - tencent/Hunyuan3D-2
