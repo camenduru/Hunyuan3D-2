@@ -3,7 +3,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--port', type=int, default=8080)
 parser.add_argument('--cache-path', type=str, default='gradio_cache')
-parser.add_argument('--enable_t23d', default=True)
+parser.add_argument('--enable_t23d', default=False)
 parser.add_argument('--local', action="store_true")
 args = parser.parse_args()
 
