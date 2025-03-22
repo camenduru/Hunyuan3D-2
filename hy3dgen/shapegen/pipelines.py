@@ -215,7 +215,7 @@ class Hunyuan3DDiTPipeline:
             if not os.path.exists(model_path):
                 
                 try:
-                    import huggingface_hub
+                    from huggingface_hub import snapshot_download
                     path = snapshot_download(
                         repo_id=original_model_path,
                         allow_patterns=[f"hunyuan3d-dit-v2-0/*"],  # 关键修改：模式匹配子文件夹
