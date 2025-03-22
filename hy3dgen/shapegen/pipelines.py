@@ -213,10 +213,13 @@ class Hunyuan3DDiTPipeline:
             base_dir = os.environ.get('HY3DGEN_MODELS', '~/.cache/hy3dgen')
             model_path = os.path.expanduser(os.path.join(base_dir, model_path, 'hunyuan3d-dit-v2-0'))
             if not os.path.exists(model_path):
+                
                 try:
                     import huggingface_hub
-                    # download from huggingface
-                    path = huggingface_hub.snapshot_download(repo_id=original_model_path)
+                    path = snapshot_download(
+                        repo_id=original_model_path,
+                        allow_patterns=[f"hunyuan3d-dit-v2-0/*"],  # 关键修改：模式匹配子文件夹
+                    )
                     model_path = os.path.join(path, 'hunyuan3d-dit-v2-0')
                 except ImportError:
                     logger.warning(
