@@ -1,13 +1,3 @@
-# Open Source Model Licensed under the Apache License Version 2.0
-# and Other Licenses of the Third-Party Components therein:
-# The below Model in this distribution may have been modified by THL A29 Limited
-# ("Tencent Modifications"). All Tencent Modifications are Copyright (C) 2024 THL A29 Limited.
-
-# Copyright (C) 2024 THL A29 Limited, a Tencent company.  All rights reserved.
-# The below software and/or models in this distribution may have been
-# modified by THL A29 Limited ("Tencent Modifications").
-# All Tencent Modifications are Copyright (C) THL A29 Limited.
-
 # Hunyuan 3D is licensed under the TENCENT HUNYUAN NON-COMMERCIAL LICENSE AGREEMENT
 # except for the third-party components listed below.
 # Hunyuan 3D does not impose any additional limitations beyond what is outlined
@@ -24,15 +14,16 @@
 
 
 import logging
-import os
-
 import numpy as np
+import os
 import torch
 from PIL import Image
+from typing import Union, Optional
 
 from .differentiable_renderer.mesh_render import MeshRender
 from .utils.dehighlight_utils import Light_Shadow_Remover
 from .utils.multiview_utils import Multiview_Diffusion_Net
+from .utils.imagesuper_utils import Image_Super_Net
 from .utils.uv_warp_utils import mesh_uv_wrap
 
 logger = logging.getLogger(__name__)
@@ -50,7 +41,7 @@ class Hunyuan3DTexGenConfig:
         self.candidate_view_weights = [1, 0.1, 0.5, 0.1, 0.05, 0.05]
 
         self.render_size = 2048
-        self.texture_size = 1024
+        self.texture_size = 2048
         self.bake_exp = 4
         self.merge_method = 'fast'
 
@@ -77,7 +68,6 @@ class Hunyuan3DPaintPipeline:
                                                                    allow_patterns=["hunyuan3d-paint-v2-0/*"])
                     delight_model_path = os.path.join(model_path, 'hunyuan3d-delight-v2-0')
                     multiview_model_path = os.path.join(model_path, 'hunyuan3d-paint-v2-0')
-                    
                     return cls(Hunyuan3DTexGenConfig(delight_model_path, multiview_model_path))
                 except ImportError:
                     logger.warning(
@@ -104,6 +94,11 @@ class Hunyuan3DPaintPipeline:
         # Load model
         self.models['delight_model'] = Light_Shadow_Remover(self.config)
         self.models['multiview_model'] = Multiview_Diffusion_Net(self.config)
+        # self.models['super_model'] = Image_Super_Net(self.config)
+
+    def enable_model_cpu_offload(self, gpu_id: Optional[int] = None, device: Union[torch.device, str] = "cuda"):
+        self.models['delight_model'].pipeline.enable_model_cpu_offload(gpu_id=gpu_id, device=device)
+        self.models['multiview_model'].pipeline.enable_model_cpu_offload(gpu_id=gpu_id, device=device)
 
     def render_normal_multiview(self, camera_elevs, camera_azims, use_abs_coor=True):
         normal_maps = []
@@ -150,6 +145,40 @@ class Hunyuan3DPaintPipeline:
 
         return texture
 
+    def recenter_image(self, image, border_ratio=0.2):
+        if image.mode == 'RGB':
+            return image
+        elif image.mode == 'L':
+            image = image.convert('RGB')
+            return image
+
+        alpha_channel = np.array(image)[:, :, 3]
+        non_zero_indices = np.argwhere(alpha_channel > 0)
+        if non_zero_indices.size == 0:
+            raise ValueError("Image is fully transparent")
+
+        min_row, min_col = non_zero_indices.min(axis=0)
+        max_row, max_col = non_zero_indices.max(axis=0)
+
+        cropped_image = image.crop((min_col, min_row, max_col + 1, max_row + 1))
+
+        width, height = cropped_image.size
+        border_width = int(width * border_ratio)
+        border_height = int(height * border_ratio)
+
+        new_width = width + 2 * border_width
+        new_height = height + 2 * border_height
+
+        square_size = max(new_width, new_height)
+
+        new_image = Image.new('RGBA', (square_size, square_size), (255, 255, 255, 0))
+
+        paste_x = (square_size - new_width) // 2 + border_width
+        paste_y = (square_size - new_height) // 2 + border_height
+
+        new_image.paste(cropped_image, (paste_x, paste_y))
+        return new_image
+
     @torch.no_grad()
     def __call__(self, mesh, image):
 
@@ -157,6 +186,8 @@ class Hunyuan3DPaintPipeline:
             image_prompt = Image.open(image)
         else:
             image_prompt = image
+
+        image_prompt = self.recenter_image(image_prompt)
 
         image_prompt = self.models['delight_model'](image_prompt)
 
@@ -178,6 +209,7 @@ class Hunyuan3DPaintPipeline:
         multiviews = self.models['multiview_model'](image_prompt, normal_maps + position_maps, camera_info)
 
         for i in range(len(multiviews)):
+            #     multiviews[i] = self.models['super_model'](multiviews[i])
             multiviews[i] = multiviews[i].resize(
                 (self.config.render_size, self.config.render_size))
 

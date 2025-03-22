@@ -1,4 +1,0 @@
-# ninja log v5
-5	12944	1737469910283155280	/apdcephfs_cq5/share_300600172/huiwenshi/repos/Hunyuan3D-2-spaces/hy3dgen/texgen/custom_rasterizer/build/temp.linux-x86_64-cpython-311/lib/custom_rasterizer_kernel/rasterizer.o	6b1f5e5e4b199209
-4	13455	1737469910695486266	/apdcephfs_cq5/share_300600172/huiwenshi/repos/Hunyuan3D-2-spaces/hy3dgen/texgen/custom_rasterizer/build/temp.linux-x86_64-cpython-311/lib/custom_rasterizer_kernel/grid_neighbor.o	af3659b839e5e6e4
-6	34765	1737469932096669642	/apdcephfs_cq5/share_300600172/huiwenshi/repos/Hunyuan3D-2-spaces/hy3dgen/texgen/custom_rasterizer/build/temp.linux-x86_64-cpython-311/lib/custom_rasterizer_kernel/rasterizer_gpu.o	f5d05646c31ca370
