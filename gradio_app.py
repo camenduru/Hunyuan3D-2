@@ -672,7 +672,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     args.enable_flashvdm = True
-    args.enable_t23d = False
+    args.enable_t23d = True
     
     SAVE_DIR = args.cache_path
     os.makedirs(SAVE_DIR, exist_ok=True)
