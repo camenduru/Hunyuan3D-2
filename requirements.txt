@@ -1,6 +1,6 @@
 ninja
 pybind11
-
+tdmp
 diffusers
 einops
 opencv-python
