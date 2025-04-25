@@ -36,6 +36,6 @@ fastapi
 uvicorn
 rembg
 onnxruntime
-gradio_client<=1.7.0
+pydantic==2.10.6
 #gevent
 #geventhttpclient
