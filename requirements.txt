@@ -36,5 +36,6 @@ fastapi
 uvicorn
 rembg
 onnxruntime
+gradio_client<=1.7.0
 #gevent
 #geventhttpclient
