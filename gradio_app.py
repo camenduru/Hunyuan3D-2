@@ -33,7 +33,7 @@ MAX_SEED = 1e7
 
 if True:
     import os
-    import spaces
+    # import spaces
     import subprocess
     import sys
     import shlex
@@ -142,7 +142,7 @@ def build_model_viewer_html(save_folder, height=660, width=790, textured=False):
         </div>
     """
 
-@spaces.GPU(duration=40)
+# @spaces.GPU(duration=40)
 def _gen_shape(
     caption=None,
     image=None,
@@ -249,7 +249,7 @@ def _gen_shape(
     main_image = image if not MV_MODE else image['front']
     return mesh, main_image, save_folder, stats, seed
 
-@spaces.GPU(duration=90)
+# @spaces.GPU(duration=90)
 def generation_all(
     caption=None,
     image=None,
@@ -314,7 +314,7 @@ def generation_all(
         seed,
     )
 
-@spaces.GPU(duration=40)
+# @spaces.GPU(duration=40)
 def shape_generation(
     caption=None,
     image=None,
